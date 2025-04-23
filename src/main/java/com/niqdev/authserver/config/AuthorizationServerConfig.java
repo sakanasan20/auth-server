@@ -5,6 +5,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -33,6 +34,9 @@ import com.niqdev.authserver.util.KeyGeneratorUtils;
 @Configuration
 @EnableWebSecurity // 啟用 Spring Security
 public class AuthorizationServerConfig {
+	
+	@Value("${server.port}")
+    private int serverPort;
 
 	/**
 	 * 設定授權伺服器專屬的 SecurityFilterChain
@@ -80,7 +84,7 @@ public class AuthorizationServerConfig {
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC) // 使用 client_secret_basic 認證
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE) // 支援的授權類型，授權碼
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN) // 支援的授權類型，刷新 token
-				.redirectUri("http://localhost:8080/callback") // 完成授權後重導的 URI
+				.redirectUri("http://localhost:" + serverPort + "/callback") // 完成授權後重導的 URI
 				.scope(OidcScopes.OPENID) // 支援的權限範圍（scope），openid
 				.scope("read") // 支援的權限範圍（scope），read
 				.build();
