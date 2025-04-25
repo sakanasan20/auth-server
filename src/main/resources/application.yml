@@ -1,32 +1,23 @@
 server:
   port: 8081
-  
+
 spring:
   application:
     name: auth-server
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:${server.port}
-          jwk-set-uri: http://localhost:${server.port}/oauth2/jwks
-      client:
-        registration:
-          my-client:
-            client-id: my-client
-            client-secret: my-secret
-            scope: openid
-            authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:${server.port}/login/oauth2/code/my-client
-            client-authentication-method: client_secret_basic
-        provider:
-          my-provider:
-            authorization-uri: http://localhost:${server.port}/oauth2/authorize
-            token-uri: http://localhost:${server.port}/oauth2/token
-            user-info-uri: http://localhost:${server.port}/userinfo
-            jwk-set-uri: http://localhost:${server.port}/oauth2/jwks
-            issuer-uri: http://localhost:${server.port}
-            
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+      
 logging:
   level:
     "[org.springframework.security]": DEBUG

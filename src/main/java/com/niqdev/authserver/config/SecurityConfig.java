@@ -26,16 +26,16 @@ public class SecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
 	        .csrf(csrf -> csrf
-					.ignoringRequestMatchers("/h2-console/**"))
+					.ignoringRequestMatchers("/h2-console/**")
+				)
 	        .headers(headers -> headers
-					.frameOptions(frameOptions -> frameOptions.sameOrigin()))
+					.frameOptions(frameOptions -> frameOptions.sameOrigin())
+				)
             .authorizeHttpRequests(auth -> auth
             		.requestMatchers("/h2-console/**").permitAll()
+            		.requestMatchers("/oidc/logout").permitAll()
             		.anyRequest().authenticated()
             	)
-            .oauth2ResourceServer(oauth2 -> oauth2
-            		.jwt(Customizer.withDefaults())
-                )
             .formLogin(Customizer.withDefaults());
         return http.build();
     }
