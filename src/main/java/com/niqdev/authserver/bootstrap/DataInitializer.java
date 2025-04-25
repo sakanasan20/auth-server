@@ -1,16 +1,23 @@
 package com.niqdev.authserver.bootstrap;
 
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.niqdev.authserver.entity.Authority;
+import com.niqdev.authserver.entity.Client;
 import com.niqdev.authserver.entity.Role;
 import com.niqdev.authserver.entity.User;
 import com.niqdev.authserver.repository.AuthorityRepository;
+import com.niqdev.authserver.repository.ClientRepository;
 import com.niqdev.authserver.repository.RoleRepository;
 import com.niqdev.authserver.repository.UserRepository;
 
@@ -25,11 +32,49 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AuthorityRepository authorityRepository;
+    private final ClientRepository clientRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
     public void run(String... args) {
+    	
+    	Client client = Client.builder()
+    			.id(UUID.randomUUID().toString())
+    			.clientId("my-client")
+    			.clientSecret(passwordEncoder.encode("my-secret"))
+    			.authenticationMethods(
+    					List.of(
+    							ClientAuthenticationMethod.CLIENT_SECRET_BASIC
+							)
+    					.stream()
+    					.map(ClientAuthenticationMethod::getValue)
+    					.collect(Collectors.joining(",")))
+    			.authorizationGrantTypes(
+    					List.of(
+    							AuthorizationGrantType.AUTHORIZATION_CODE, 
+    							AuthorizationGrantType.REFRESH_TOKEN
+							)
+    					.stream()
+    					.map(AuthorizationGrantType::getValue)
+    					.collect(Collectors.joining(",")))
+				.redirectUris(
+						List.of(
+								"http://localhost:8080/login/oauth2/code/my-client"
+							)
+						.stream()
+    					.collect(Collectors.joining(",")))
+				.scopes(
+						List.of(
+								"openid", 
+								"read"
+							)
+						.stream()
+						.collect(Collectors.joining(",")))
+    			.build();
+    	
+    	clientRepository.save(client);
+    	
         // 1. 建立權限
         Authority authorityRead = saveAuthorityIfNotExists("READ");
         Authority authorityWrite = saveAuthorityIfNotExists("WRITE");

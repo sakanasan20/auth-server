@@ -6,7 +6,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -15,13 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.oidc.OidcScopes;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
@@ -39,15 +31,13 @@ import com.niqdev.authserver.util.KeyGeneratorUtils;
 @EnableWebSecurity
 public class AuthorizationServerConfig {
 	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	
     @Bean
     OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
         return context -> {
             Authentication principal = context.getPrincipal();
             if (principal.getPrincipal() instanceof UserDetails userDetails) {
-                List<String> roles = userDetails.getAuthorities().stream()
+            	// 取得 UserDetails 的 Authorities (已包含 roles + authorities)
+            	List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .toList();
 
@@ -85,23 +75,6 @@ public class AuthorizationServerConfig {
 			.with(authorizationServerConfigurer, (config) -> {});
 
 		return http.build();
-	}
-
-	@Bean
-	RegisteredClientRepository registeredClientRepository() {
-		RegisteredClient registeredClient = RegisteredClient
-				.withId(UUID.randomUUID().toString())
-				.clientId("my-client")
-				.clientSecret(passwordEncoder.encode("my-secret"))
-				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-				.redirectUri("http://localhost:8080/login/oauth2/code/my-client")
-				.scope(OidcScopes.OPENID)
-				.scope("read")
-				.build();
-		
-		return new InMemoryRegisteredClientRepository(registeredClient);
 	}
 
 	@Bean
