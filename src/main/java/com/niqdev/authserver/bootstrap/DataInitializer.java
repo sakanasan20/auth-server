@@ -36,8 +36,8 @@ public class DataInitializer implements CommandLineRunner {
         Authority authorityDelete = saveAuthorityIfNotExists("DELETE");
 
         // 2. 建立角色並關聯權限
-        Role roleUser = saveRoleIfNotExists("ROLE_USER", Set.of(authorityRead));
-        Role roleAdmin = saveRoleIfNotExists("ROLE_ADMIN", Set.of(authorityRead, authorityWrite, authorityDelete));
+        Role roleUser = saveRoleIfNotExists("USER", Set.of(authorityRead));
+        Role roleAdmin = saveRoleIfNotExists("ADMIN", Set.of(authorityRead, authorityWrite, authorityDelete));
 
         // 3. 建立 admin 使用者
         String adminUsername = "admin";
