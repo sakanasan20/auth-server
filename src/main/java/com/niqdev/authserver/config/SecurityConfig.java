@@ -30,6 +30,9 @@ public class SecurityConfig {
             		.requestMatchers("/oidc/logout").permitAll()
             		.anyRequest().authenticated()
             	)
+            .oauth2ResourceServer(oauth2 -> oauth2
+            		.jwt(Customizer.withDefaults())
+                )
             .formLogin(Customizer.withDefaults());
         return http.build();
     }
