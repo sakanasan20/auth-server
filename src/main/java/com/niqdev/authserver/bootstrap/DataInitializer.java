@@ -91,8 +91,10 @@ public class DataInitializer implements CommandLineRunner {
                     .username(adminUsername)
                     .password(passwordEncoder.encode("admin"))
                     .roles(Set.of(roleAdmin))
+                    .email("admin@example.com")
                     .build();
             userRepository.save(admin);
+            userRepository.flush();
             log.info("建立 admin 使用者（帳號：{}）", adminUsername);
         } else {
             log.info("admin 使用者已存在，略過建立");
@@ -105,15 +107,17 @@ public class DataInitializer implements CommandLineRunner {
                     .username(userUsername)
                     .password(passwordEncoder.encode("user"))
                     .roles(Set.of(roleUser))
+                    .email("user@example.com")
                     .build();
             userRepository.save(user);
+            userRepository.flush();
             log.info("建立一般使用者（帳號：{}）", userUsername);
         } else {
             log.info("一般使用者已存在，略過建立");
         }
     }
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
     private Authority saveAuthorityIfNotExists(String name) {
         return authorityRepository.findByName(name)
                 .orElseGet(() -> authorityRepository.save(new Authority(null, name)));

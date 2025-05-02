@@ -50,4 +50,6 @@ public class CustomUserDetails implements UserDetails {
     @Override public boolean isAccountNonLocked() { return accountNonLocked; }
     @Override public boolean isCredentialsNonExpired() { return credentialsNonExpired; }
     @Override public boolean isEnabled() { return enabled; }
+    
+    public User getUser() { return this.user; }
 }
