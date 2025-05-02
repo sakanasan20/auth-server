@@ -52,12 +52,13 @@ public class AuthorizationServerConfig {
 
 	            if (context.getTokenType().getValue().equals("id_token")) {
 	                context.getClaims().claim("roles", roles);
-	                context.getClaims().claim("user", userInfo.toClaims()); // 將 DTO 轉為 Map，保證能被 JSON 正確序列化進 token
+	                context.getClaims().claim("user", userInfo.toClaims()); // toClaims() 將 DTO 轉為 Map，保證能被 JSON 正確序列化進 token
 	            }
 
 	            if (context.getTokenType().getValue().equals("access_token")) {
+	            	context.getClaims().claim("authorities", roles);
 	                context.getClaims().claim("roles", roles);
-	                context.getClaims().claim("user", userInfo.toClaims()); // 將 DTO 轉為 Map，保證能被 JSON 正確序列化進 token
+	                context.getClaims().claim("user", userInfo.toClaims()); // toClaims() 將 DTO 轉為 Map，保證能被 JSON 正確序列化進 token
 	            }
 	        }
 	    };

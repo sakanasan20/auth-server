@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.niqdev.authserver.converter.UserConverter;
+import com.niqdev.authserver.dto.PageResponse;
 import com.niqdev.authserver.dto.user.CreateUserRequest;
 import com.niqdev.authserver.dto.user.ReplaceUserRequest;
 import com.niqdev.authserver.dto.user.UpdateUserRequest;
@@ -40,11 +41,15 @@ public class AdminUserController {
 	// 搜尋使用者
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/search")
-	public Page<UserDto> searchUsers(
+	public PageResponse<UserDto> searchUsers(
 			@RequestBody UserSearchCriteria criteria,
 	        @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-
-		return userService.searchUsers(criteria, pageable).map(userConverter::toDto);
+		
+		if (criteria == null) {
+	        criteria = new UserSearchCriteria(); // 初始化預設條件
+	    }
+		Page<UserDto> page = userService.searchUsers(criteria, pageable).map(userConverter::toDto);
+		return new PageResponse<>(page);
 	}
 
     // 取得單一使用者資料

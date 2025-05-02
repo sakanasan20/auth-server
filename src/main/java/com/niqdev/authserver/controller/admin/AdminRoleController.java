@@ -43,6 +43,10 @@ public class AdminRoleController {
     public Page<RoleDto> searchRoles(
             @RequestBody RoleSearchCriteria criteria,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    	
+    	if (criteria == null) {
+	        criteria = new RoleSearchCriteria(); // 初始化預設條件
+	    }
         return roleService.searchRoles(criteria, pageable).map(roleConverter::toDto);
     }
 

@@ -23,6 +23,7 @@ import com.niqdev.authserver.dto.authority.AuthorityDto;
 import com.niqdev.authserver.dto.authority.AuthoritySearchCriteria;
 import com.niqdev.authserver.dto.authority.CreateAuthorityRequest;
 import com.niqdev.authserver.dto.authority.UpdateAuthorityRequest;
+import com.niqdev.authserver.dto.role.RoleSearchCriteria;
 import com.niqdev.authserver.entity.Authority;
 import com.niqdev.authserver.service.admin.AuthorityServiceImpl;
 
@@ -43,8 +44,11 @@ public class AdminAuthorityController {
     public Page<AuthorityDto> searchAuthorities(
             @RequestBody AuthoritySearchCriteria criteria,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return authorityService.searchAuthorities(criteria, pageable)
-                               .map(authorityConverter::toDto);
+    	
+    	if (criteria == null) {
+	        criteria = new AuthoritySearchCriteria(); // 初始化預設條件
+	    }
+        return authorityService.searchAuthorities(criteria, pageable).map(authorityConverter::toDto);
     }
 
     // 取得單一權限資料
