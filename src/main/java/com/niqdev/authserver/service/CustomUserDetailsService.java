@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.niqdev.authserver.repository.UserRepository;
+import com.niqdev.authserver.repository.admin.UserRepository;
 import com.niqdev.authserver.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;

@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.niqdev.authserver.service.AuthService;
 
 @RestController
-@RequestMapping("/api")
-public class ApiController {
+@RequestMapping("/api/auth")
+public class AuthController {
 	
 	private final AuthService authService;
 	
-    public ApiController(AuthService authService) {
+    public AuthController(AuthService authService) {
 		this.authService = authService;
 	}
 

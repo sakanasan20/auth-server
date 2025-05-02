@@ -1,8 +1,15 @@
 package com.niqdev.authserver.entity;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,8 +37,12 @@ public class Role {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String name; // ROLE_USER, ROLE_ADMIN
 
+    @Column(length = 500)
+    private String description;
+    
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -40,4 +51,18 @@ public class Role {
         inverseJoinColumns = @JoinColumn(name = "authority_id")
     )
     private Set<Authority> authorities = new HashSet<>();
+    
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @CreatedBy
+    @Column(updatable = false)
+    private String createdBy;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @LastModifiedBy
+    private String updatedBy;
 }

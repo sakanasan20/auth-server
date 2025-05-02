@@ -16,10 +16,10 @@ import com.niqdev.authserver.entity.Authority;
 import com.niqdev.authserver.entity.Client;
 import com.niqdev.authserver.entity.Role;
 import com.niqdev.authserver.entity.User;
-import com.niqdev.authserver.repository.AuthorityRepository;
 import com.niqdev.authserver.repository.ClientRepository;
-import com.niqdev.authserver.repository.RoleRepository;
-import com.niqdev.authserver.repository.UserRepository;
+import com.niqdev.authserver.repository.admin.AuthorityRepository;
+import com.niqdev.authserver.repository.admin.RoleRepository;
+import com.niqdev.authserver.repository.admin.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +52,7 @@ public class DataInitializer implements CommandLineRunner {
     					.collect(Collectors.joining(",")))
     			.authorizationGrantTypes(
     					List.of(
+    							AuthorizationGrantType.CLIENT_CREDENTIALS, 
     							AuthorizationGrantType.AUTHORIZATION_CODE, 
     							AuthorizationGrantType.REFRESH_TOKEN
 							)
@@ -120,16 +121,22 @@ public class DataInitializer implements CommandLineRunner {
 	@Transactional(readOnly = true)
     private Authority saveAuthorityIfNotExists(String name) {
         return authorityRepository.findByName(name)
-                .orElseGet(() -> authorityRepository.save(new Authority(null, name)));
+                .orElseGet(() -> {
+                	Authority authority = Authority.builder()
+                			.name(name)
+                			.build();
+                	return authorityRepository.save(authority);
+                });
     }
 
     @Transactional(readOnly = true)
     private Role saveRoleIfNotExists(String name, Set<Authority> authorities) {
         return roleRepository.findByName(name)
                 .orElseGet(() -> {
-                    Role role = new Role();
-                    role.setName(name);
-                    role.setAuthorities(authorities);
+                    Role role = Role.builder()
+                    		.name(name)
+                    		.authorities(authorities)
+                    		.build();
                     return roleRepository.save(role);
                 });
     }
