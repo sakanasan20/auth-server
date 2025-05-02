@@ -77,13 +77,13 @@ public class DataInitializer implements CommandLineRunner {
     	clientRepository.save(client);
     	
         // 1. 建立權限
-        Authority authorityRead = saveAuthorityIfNotExists("READ");
-        Authority authorityWrite = saveAuthorityIfNotExists("WRITE");
-        Authority authorityDelete = saveAuthorityIfNotExists("DELETE");
+        Authority authorityRead = saveAuthorityIfNotExists("READ", "讀取");
+        Authority authorityWrite = saveAuthorityIfNotExists("WRITE", "寫入");
+        Authority authorityDelete = saveAuthorityIfNotExists("DELETE", "刪除");
 
         // 2. 建立角色並關聯權限
-        Role roleUser = saveRoleIfNotExists("USER", Set.of(authorityRead));
-        Role roleAdmin = saveRoleIfNotExists("ADMIN", Set.of(authorityRead, authorityWrite, authorityDelete));
+        Role roleUser = saveRoleIfNotExists("USER", "一般使用者", Set.of(authorityRead));
+        Role roleAdmin = saveRoleIfNotExists("ADMIN", "管理者", Set.of(authorityRead, authorityWrite, authorityDelete));
 
         // 3. 建立 admin 使用者
         String adminUsername = "admin";
@@ -119,22 +119,24 @@ public class DataInitializer implements CommandLineRunner {
     }
 
 	@Transactional(readOnly = true)
-    private Authority saveAuthorityIfNotExists(String name) {
+    private Authority saveAuthorityIfNotExists(String name, String description) {
         return authorityRepository.findByName(name)
                 .orElseGet(() -> {
                 	Authority authority = Authority.builder()
                 			.name(name)
+                			.description(description)
                 			.build();
                 	return authorityRepository.save(authority);
                 });
     }
 
     @Transactional(readOnly = true)
-    private Role saveRoleIfNotExists(String name, Set<Authority> authorities) {
+    private Role saveRoleIfNotExists(String name, String description, Set<Authority> authorities) {
         return roleRepository.findByName(name)
                 .orElseGet(() -> {
                     Role role = Role.builder()
                     		.name(name)
+                    		.description(description)
                     		.authorities(authorities)
                     		.build();
                     return roleRepository.save(role);

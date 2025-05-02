@@ -6,9 +6,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.niqdev.authserver.converter.AuthorityConverter;
-import com.niqdev.authserver.dto.ReplaceAuthorityRequest;
 import com.niqdev.authserver.dto.authority.AuthoritySearchCriteria;
 import com.niqdev.authserver.dto.authority.CreateAuthorityRequest;
+import com.niqdev.authserver.dto.authority.ReplaceAuthorityRequest;
 import com.niqdev.authserver.dto.authority.UpdateAuthorityRequest;
 import com.niqdev.authserver.entity.Authority;
 import com.niqdev.authserver.repository.admin.AuthorityRepository;

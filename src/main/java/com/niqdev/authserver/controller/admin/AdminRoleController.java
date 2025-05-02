@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.niqdev.authserver.converter.RoleConverter;
+import com.niqdev.authserver.dto.PageResponse;
 import com.niqdev.authserver.dto.role.CreateRoleRequest;
 import com.niqdev.authserver.dto.role.ReplaceRoleRequest;
 import com.niqdev.authserver.dto.role.RoleDto;
@@ -40,14 +41,15 @@ public class AdminRoleController {
     // 搜尋角色
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/search")
-    public Page<RoleDto> searchRoles(
+    public PageResponse<RoleDto> searchRoles(
             @RequestBody RoleSearchCriteria criteria,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     	
     	if (criteria == null) {
 	        criteria = new RoleSearchCriteria(); // 初始化預設條件
 	    }
-        return roleService.searchRoles(criteria, pageable).map(roleConverter::toDto);
+    	Page<RoleDto> page = roleService.searchRoles(criteria, pageable).map(roleConverter::toDto);
+        return new PageResponse<>(page);
     }
 
     // 取得單一角色資料

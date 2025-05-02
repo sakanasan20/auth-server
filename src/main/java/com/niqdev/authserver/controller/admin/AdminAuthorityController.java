@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.niqdev.authserver.converter.AuthorityConverter;
-import com.niqdev.authserver.dto.ReplaceAuthorityRequest;
+import com.niqdev.authserver.dto.PageResponse;
 import com.niqdev.authserver.dto.authority.AuthorityDto;
 import com.niqdev.authserver.dto.authority.AuthoritySearchCriteria;
 import com.niqdev.authserver.dto.authority.CreateAuthorityRequest;
+import com.niqdev.authserver.dto.authority.ReplaceAuthorityRequest;
 import com.niqdev.authserver.dto.authority.UpdateAuthorityRequest;
-import com.niqdev.authserver.dto.role.RoleSearchCriteria;
 import com.niqdev.authserver.entity.Authority;
 import com.niqdev.authserver.service.admin.AuthorityServiceImpl;
 
@@ -41,14 +41,15 @@ public class AdminAuthorityController {
     // 搜尋權限
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/search")
-    public Page<AuthorityDto> searchAuthorities(
+    public PageResponse<AuthorityDto> searchAuthorities(
             @RequestBody AuthoritySearchCriteria criteria,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     	
     	if (criteria == null) {
 	        criteria = new AuthoritySearchCriteria(); // 初始化預設條件
 	    }
-        return authorityService.searchAuthorities(criteria, pageable).map(authorityConverter::toDto);
+    	Page<AuthorityDto> page = authorityService.searchAuthorities(criteria, pageable).map(authorityConverter::toDto);
+    	return new PageResponse<>(page);
     }
 
     // 取得單一權限資料

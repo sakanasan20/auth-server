@@ -2,9 +2,9 @@ package com.niqdev.authserver.converter;
 
 import org.springframework.stereotype.Component;
 
-import com.niqdev.authserver.dto.ReplaceAuthorityRequest;
 import com.niqdev.authserver.dto.authority.AuthorityDto;
 import com.niqdev.authserver.dto.authority.CreateAuthorityRequest;
+import com.niqdev.authserver.dto.authority.ReplaceAuthorityRequest;
 import com.niqdev.authserver.dto.authority.UpdateAuthorityRequest;
 import com.niqdev.authserver.entity.Authority;
 
