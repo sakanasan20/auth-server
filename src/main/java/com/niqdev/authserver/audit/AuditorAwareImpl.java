@@ -19,21 +19,21 @@ public class AuditorAwareImpl implements AuditorAware<String> {
     public Optional<String> getCurrentAuditor() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
-        	log.info("getCurrentAuditor: Returning system as auditor");
+        	log.debug("getCurrentAuditor: Returning system as auditor");
             return Optional.of("system");
         }
 
         // 若 principal 是你自訂的 UserDetails 實作
         Object principal = auth.getPrincipal();
         if (principal instanceof CustomUserDetails userDetails) {
-        	log.info("getCurrentAuditor: Returning user {}", userDetails.getUsername());
+        	log.debug("getCurrentAuditor: Returning user {}", userDetails.getUsername());
             return Optional.of(userDetails.getUsername());
         } else if (principal instanceof OidcUser) {
-        	log.info("getCurrentAuditor: Returning email {}", ((OidcUser) principal).getEmail());
+        	log.debug("getCurrentAuditor: Returning email {}", ((OidcUser) principal).getEmail());
             return Optional.of(((OidcUser) principal).getEmail()); // 或其他欄位
         }
 
-        log.info("getCurrentAuditor: Returning default {}", auth.getName());
+        log.debug("getCurrentAuditor: Returning default {}", auth.getName());
         return Optional.of(auth.getName());
     }
 }

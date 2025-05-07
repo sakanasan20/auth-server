@@ -40,10 +40,10 @@ public class AdminUserController {
 	
 	// 搜尋使用者
 	@PreAuthorize("hasRole('ADMIN')")
-	@GetMapping("/search")
+	@PostMapping("/search")
 	public PageResponse<UserDto> searchUsers(
 			@RequestBody UserSearchCriteria criteria,
-	        @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+	        @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
 		
 		if (criteria == null) {
 	        criteria = new UserSearchCriteria(); // 初始化預設條件

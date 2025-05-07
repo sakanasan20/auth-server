@@ -1,5 +1,6 @@
 package com.niqdev.authserver.bootstrap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -116,6 +117,24 @@ public class DataInitializer implements CommandLineRunner {
         } else {
             log.info("一般使用者已存在，略過建立");
         }
+        
+        //
+        List<User> genUsers = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            String genUsername = "user" + i;
+            if (userRepository.findByUsername(genUsername).isEmpty()) {
+                User user = User.builder()
+                        .username(genUsername)
+                        .password(passwordEncoder.encode("user"))
+                        .roles(Set.of(roleUser))
+                        .email("user" + i + "@example.com")
+                        .build();
+                genUsers.add(user);
+            } else {
+                log.info("使用者 (" + genUsername + ")已存在，略過建立");
+            }
+        }
+        userRepository.saveAllAndFlush(genUsers);
     }
 
 	@Transactional(readOnly = true)
