@@ -1,5 +1,7 @@
 package com.niqdev.authserver.controller.admin;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -93,6 +95,14 @@ public class AdminUserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
+    }
+    
+    // 刪除多筆使用者
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/batch/{userIds}")
+    public ResponseEntity<Void> deleteUsers(@PathVariable List<Long> userIds) {
+        userService.deleteUsers(userIds);
         return ResponseEntity.noContent().build();
     }
 }

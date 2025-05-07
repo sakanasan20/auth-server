@@ -1,5 +1,7 @@
 package com.niqdev.authserver.service.admin;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -54,6 +56,10 @@ public class UserServiceImpl {
 
 	public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
+	}
+
+	public void deleteUsers(List<Long> userIds) {
+		userRepository.deleteAllById(userIds);
 	}
 	
 }
