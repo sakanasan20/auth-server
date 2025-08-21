@@ -18,11 +18,19 @@ public class SecurityConfig {
 			throws Exception {
 		http
 			.authorizeHttpRequests((authorize) -> authorize
+				.requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
 				.anyRequest().authenticated()
 			)
 			// Form login handles the redirect to the login page from the
 			// authorization server filter chain
-			.formLogin(Customizer.withDefaults());
+			.formLogin(form -> form
+				.loginPage("/login")
+				.permitAll()
+			)
+			.logout(logout -> logout
+				.logoutSuccessUrl("/login?logout")
+				.permitAll()
+			);
 
 		return http.build();
 	}
