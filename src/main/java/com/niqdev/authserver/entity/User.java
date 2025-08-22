@@ -2,7 +2,6 @@ package com.niqdev.authserver.entity;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -26,15 +25,18 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean enabled = true;
     
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    private List<String> roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles;
     
     // Constructors
     public User() {}
     
-    public User(String username, String password, List<String> roles) {
+    public User(String username, String password, List<Role> roles) {
         this.username = username;
         this.password = password;
         this.roles = roles;
@@ -44,7 +46,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .flatMap(role -> role.getAuthorities().stream())
                 .collect(Collectors.toList());
     }
     
@@ -99,11 +101,11 @@ public class User implements UserDetails {
         this.enabled = enabled;
     }
     
-    public List<String> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
     
-    public void setRoles(List<String> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 }
