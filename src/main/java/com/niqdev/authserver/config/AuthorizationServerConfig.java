@@ -26,9 +26,13 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+
+import com.niqdev.authserver.repository.UserRepository;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -44,6 +48,9 @@ public class AuthorizationServerConfig {
 	
 	@Autowired
 	private CustomOAuth2AuthorizationConsentService customOAuth2AuthorizationConsentService;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@Bean 
 	@Order(1)
@@ -61,6 +68,7 @@ public class AuthorizationServerConfig {
 						authorizationEndpoint.consentPage("/consent")
 					)
 					.authorizationConsentService(customOAuth2AuthorizationConsentService)
+
 			)
 			.authorizeHttpRequests((authorize) ->
 				authorize
@@ -93,6 +101,8 @@ public class AuthorizationServerConfig {
 				.scope(OidcScopes.EMAIL)
 				.scope(OidcScopes.ADDRESS)
 				.scope(OidcScopes.PHONE)
+				.scope("roles")
+				.scope("authorities")
 				.clientSettings(ClientSettings.builder()
 					.requireAuthorizationConsent(true)
 					.requireProofKey(false)
@@ -119,6 +129,11 @@ public class AuthorizationServerConfig {
     @Bean
     AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder().build();
+    }
+    
+    @Bean
+    OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer() {
+        return new JwtTokenCustomizer(userRepository);
     }
 
     private static RSAKey generateRsaKey() {
