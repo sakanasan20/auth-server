@@ -53,6 +53,9 @@ public class AuthorizationServerConfig {
 			.with(authorizationServerConfigurer, (authorizationServer) ->
 				authorizationServer
 					.oidc(Customizer.withDefaults())	// Enable OpenID Connect 1.0
+					.authorizationEndpoint(authorizationEndpoint ->
+						authorizationEndpoint.consentPage("/consent")
+					)
 			)
 			.authorizeHttpRequests((authorize) ->
 				authorize
@@ -82,6 +85,9 @@ public class AuthorizationServerConfig {
 				.postLogoutRedirectUri("http://localhost:8080/")
 				.scope(OidcScopes.OPENID)
 				.scope(OidcScopes.PROFILE)
+				.scope(OidcScopes.EMAIL)
+				.scope(OidcScopes.ADDRESS)
+				.scope(OidcScopes.PHONE)
 				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
 				.build();
 
