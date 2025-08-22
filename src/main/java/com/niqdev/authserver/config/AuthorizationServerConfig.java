@@ -25,6 +25,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
@@ -40,6 +41,9 @@ public class AuthorizationServerConfig {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private CustomOAuth2AuthorizationConsentService customOAuth2AuthorizationConsentService;
 
 	@Bean 
 	@Order(1)
@@ -56,6 +60,7 @@ public class AuthorizationServerConfig {
 					.authorizationEndpoint(authorizationEndpoint ->
 						authorizationEndpoint.consentPage("/consent")
 					)
+					.authorizationConsentService(customOAuth2AuthorizationConsentService)
 			)
 			.authorizeHttpRequests((authorize) ->
 				authorize
@@ -88,7 +93,10 @@ public class AuthorizationServerConfig {
 				.scope(OidcScopes.EMAIL)
 				.scope(OidcScopes.ADDRESS)
 				.scope(OidcScopes.PHONE)
-				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+				.clientSettings(ClientSettings.builder()
+					.requireAuthorizationConsent(true)
+					.requireProofKey(false)
+					.build())
 				.build();
 
 		return new InMemoryRegisteredClientRepository(oidcClient);
